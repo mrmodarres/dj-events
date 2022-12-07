@@ -7,43 +7,47 @@ import { API_URL } from "config";
 import styles from "@/styles/Event.module.css";
 import Link from "next/link";
 function Events({ evt }) {
+  const event = evt.data.attributes;
+  console.log(event);
+  const image = event.image.data.attributes;
+  const imageUrl = API_URL + image.url;
   const deleteEvent = (e) => {
     console.log(e);
   };
   return (
-    // <Layout title={evt.slug}>
-    //   <div className={styles.event}>
-    //     <div className={styles.controls}>
-    //       <Link href={`/event/edit/${evt.id}`}>
-    //         <FaPencilAlt /> Edit Event
-    //       </Link>
-    //       <a href="#" className={styles.delete} onClick={deleteEvent}>
-    //         <FaTimes />
-    //         Delete Event
-    //       </a>
-    //     </div>
-    //     <span>
-    //       {evt.date} at {evt.time}
-    //     </span>
-    //     <h1>{evt.name}</h1>
-    //     {evt.image && (
-    //       <div className={styles.image}>
-    //         <Image src={evt.image} width={960} alt={evt.slug} height={600} />
-    //       </div>
-    //     )}
-    //     <h3>Perfomrd:</h3>
-    //     <p>{evt.performers}</p>
-    //     <h3>Description:</h3>
-    //     <p>{evt.desciption}</p>
-    //     <h3>Venue: {evt.venue}</h3>
-    //     <p>{evt.address}</p>
+    <Layout title={event.slug}>
+      <div className={styles.event}>
+        <div className={styles.controls}>
+          <Link href={`/event/edit/${evt.data.id}`}>
+            <FaPencilAlt /> Edit Event
+          </Link>
+          <a href="#" className={styles.delete} onClick={deleteEvent}>
+            <FaTimes />
+            Delete Event
+          </a>
+        </div>
+        <span>
+          {new Date(event.date).toDateString("en-US")} at {event.time}
+        </span>
+        <h1>{event.name}</h1>
+        {image && (
+          <div className={styles.image}>
+            <Image src={imageUrl} width={960} alt={event.slug} height={600} />
+          </div>
+        )}
+        <h3>Perfomrd:</h3>
+        <p>{event.performers}</p>
+        <h3>Description:</h3>
+        <p>{event.description}</p>
+        <h3>Venue: {event.venue}</h3>
+        <h3>Address:</h3>
+        <p>{event.address}</p>
 
-    //     <Link href="/events" className={styles.back}>
-    //       Go back
-    //     </Link>
-    //   </div>
-    // </Layout>
-    <></>
+        <Link href="/events" className={styles.back}>
+          Go back
+        </Link>
+      </div>
+    </Layout>
   );
 }
 // if you wnat to use getStaticProps you must combine it with getStaticPath
@@ -73,9 +77,8 @@ export async function getServerSideProps({ query: { slug } }) {
     `${API_URL}/api/slugify/slugs/event/${slug}?populate=*`
   );
   const event = await res.json();
-  // console.log(event);
   return {
-    props: {},
+    props: { evt: event },
   };
 }
 // /api/slugify/slugs/event/boom-dance-festival-experience?populate=*

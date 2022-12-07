@@ -5,7 +5,7 @@ import styles from "@/styles/EventItem.module.css";
 import { API_URL } from "../config";
 function EventItem({ evt }) {
   const image = evt.attributes.image.data.attributes;
-  console.log(`${API_URL}${image.url}`);
+
   return (
     <div className={styles.event}>
       <div className={styles.img}>
@@ -20,7 +20,8 @@ function EventItem({ evt }) {
       </div>
       <div className={styles.info}>
         <span>
-          {evt.attributes.date} at {evt.attributes.time}
+          {new Date(evt.attributes.date).toDateString("en-US")} at{" "}
+          {evt.attributes.time}
         </span>
         <h3>{evt.attributes.name}</h3>
       </div>
