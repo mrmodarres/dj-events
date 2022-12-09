@@ -1,21 +1,24 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
 import Layout from "@/components/Layout";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import { API_URL } from "@/config/index";
 import styles from "@/styles/Form.module.css";
+import "react-toastify/dist/ReactToastify.css";
+import { toast, ToastContainer } from "react-toastify";
+import axios from "axios";
+const initialVlues = {
+  name: "",
+  performers: "",
+  venue: "",
+  address: "",
+  date: "",
+  time: "",
+  description: "",
+};
+
 function addEvents() {
-  const [values, setValues] = useState({
-    name: "",
-    performers: "",
-    venue: "",
-    address: "",
-    date: "",
-    time: "",
-    description: "",
-  });
-  const router = useRouter();
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setValues({
@@ -24,14 +27,34 @@ function addEvents() {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(values);
+    const hasEmptyFields = Object.values(values).some((el) => el === "");
+    if (hasEmptyFields) {
+      toast.error("Fill all fields");
+    } else {
+      console.log(API_URL);
+      const res = await axios(`http:localhost:1337/api/events`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(values),
+      });
+      if (!res.ok) {
+        console.log(res);
+        toast.error("Somthing went wrong");
+      } else {
+        const evt = await res.jason();
+        router.push(`/events/${evt.slug}`);
+      }
+    }
   };
   return (
     <Layout title="Add New Events">
       <Link href="/events"></Link>Go Back
       <h1>Add Event</h1>
+      <ToastContainer />
       <form onSubmit={handleSubmit} className={styles.form}>
         <div className={styles.grid}>
           <div>
