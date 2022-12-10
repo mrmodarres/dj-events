@@ -7,10 +7,11 @@ import { API_URL } from "config";
 import styles from "@/styles/Event.module.css";
 import Link from "next/link";
 function Events({ evt }) {
+  console.log(evt);
   const event = evt.data.attributes;
-  console.log(event);
-  const image = event.image.data.attributes;
-  const imageUrl = API_URL + image.url;
+  const image = event.image.data?.attributes;
+  const imageUrl =
+    image === undefined ? "/images/event-default.png" : API_URL + image.url;
   const deleteEvent = (e) => {
     console.log(e);
   };
@@ -30,11 +31,10 @@ function Events({ evt }) {
           {new Date(event.date).toDateString("en-US")} at {event.time}
         </span>
         <h1>{event.name}</h1>
-        {image && (
-          <div className={styles.image}>
-            <Image src={imageUrl} width={960} alt={event.slug} height={600} />
-          </div>
-        )}
+        <div className={styles.image}>
+          <Image src={imageUrl} width={960} alt={event.slug} height={600} />
+        </div>
+
         <h3>Perfomrd:</h3>
         <p>{event.performers}</p>
         <h3>Description:</h3>

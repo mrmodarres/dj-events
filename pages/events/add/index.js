@@ -7,7 +7,6 @@ import { API_URL } from "@/config/index";
 import styles from "@/styles/Form.module.css";
 import "react-toastify/dist/ReactToastify.css";
 import { toast, ToastContainer } from "react-toastify";
-import axios from "axios";
 const initialVlues = {
   name: "",
   performers: "",
@@ -18,7 +17,9 @@ const initialVlues = {
   description: "",
 };
 
-function addEvents() {
+function AddEvents() {
+  const router = useRouter();
+  const [values, setValues] = useState(initialVlues);
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setValues({
@@ -33,20 +34,21 @@ function addEvents() {
     if (hasEmptyFields) {
       toast.error("Fill all fields");
     } else {
-      console.log(API_URL);
-      const res = await axios(`http:localhost:1337/api/events`, {
+      const res = await fetch(`${API_URL}/api/events`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(values),
+        body: JSON.stringify({
+          data: values,
+        }),
       });
       if (!res.ok) {
         console.log(res);
         toast.error("Somthing went wrong");
       } else {
-        const evt = await res.jason();
-        router.push(`/events/${evt.slug}`);
+        const evt = await res.json();
+        router.push(`/events/${evt.data.attributes.slug}`);
       }
     }
   };
@@ -134,4 +136,4 @@ function addEvents() {
   );
 }
 
-export default addEvents;
+export default AddEvents;

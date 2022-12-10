@@ -2,21 +2,25 @@ import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import styles from "@/styles/EventItem.module.css";
+
 import { API_URL } from "../config";
 function EventItem({ evt }) {
-  const image = evt.attributes.image.data.attributes;
-
+  const image = evt.attributes.image.data?.attributes;
+  const alt = evt.attributes.name;
+  console.log(alt);
   return (
     <div className={styles.event}>
       <div className={styles.img}>
-        {image && (
-          <Image
-            src={`${API_URL}${image.url}`}
-            width={170}
-            height={100}
-            alt={image.name}
-          />
-        )}
+        <Image
+          src={
+            image === undefined
+              ? "/images/event-default.png"
+              : API_URL + image.url
+          }
+          width={170}
+          height={100}
+          alt={alt}
+        />
       </div>
       <div className={styles.info}>
         <span>
