@@ -1,5 +1,7 @@
 import React from "react";
-import { FaPencilAlt, FaTimes } from "react-icons/fa";
+import "react-toastify/dist/ReactToastify.css";
+import { toast, ToastContainer } from "react-toastify";
+import { FaIgloo, FaPencilAlt, FaTimes } from "react-icons/fa";
 import { useRouter } from "next/router";
 import Layout from "@/components/Layout";
 import Image from "next/image";
@@ -7,19 +9,30 @@ import { API_URL } from "config";
 import styles from "@/styles/Event.module.css";
 import Link from "next/link";
 function Events({ evt }) {
-  console.log(evt);
+  const router = useRouter();
   const event = evt.data.attributes;
   const image = event.image.data?.attributes;
   const imageUrl =
     image === undefined ? "/images/event-default.png" : API_URL + image.url;
-  const deleteEvent = (e) => {
-    console.log(e);
+  const deleteEvent = async (e) => {
+    console.log(evt);
+    if (confirm("Are you sure ?")) {
+      const res = await fetch(`${API_URL}/api/events/${evt.data.id}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        toast.error(data.message);
+      } else {
+        router.push("/events");
+      }
+    }
   };
   return (
     <Layout title={event.slug}>
       <div className={styles.event}>
         <div className={styles.controls}>
-          <Link href={`/event/edit/${evt.data.id}`}>
+          <Link href={`/events/edit/${evt.data.id}`}>
             <FaPencilAlt /> Edit Event
           </Link>
           <a href="#" className={styles.delete} onClick={deleteEvent}>

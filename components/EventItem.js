@@ -7,7 +7,6 @@ import { API_URL } from "../config";
 function EventItem({ evt }) {
   const image = evt.attributes.image.data?.attributes;
   const alt = evt.attributes.name;
-  console.log(alt);
   return (
     <div className={styles.event}>
       <div className={styles.img}>
