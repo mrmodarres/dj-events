@@ -30,7 +30,6 @@ function EditEvents({ evt }) {
       ? API_URL + evt.attributes.image.data.attributes.url
       : "/images/event-default.png"
   );
-  console.log(imagePrev);
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setValues({
@@ -61,6 +60,23 @@ function EditEvents({ evt }) {
         router.push(`/events/${evt.data.attributes.slug}`);
       }
     }
+  };
+  const imageUploaded = async ({ pic }) => {
+    console.log(pic);
+    const res = await fetch(`${API_URL}/api/events/${evt.id}?populate=*`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        data: {
+          image: pic,
+        },
+      }),
+    });
+    const data = await res.json();
+    setImagePrev(API_URL + data.data.attributes.image.data.attributes.url);
+    setShowModal(false);
   };
   return (
     <Layout title="Edit Events">
@@ -155,7 +171,7 @@ function EditEvents({ evt }) {
         </button>
       </div>
       <Modal show={showModal} onClose={() => setShowModal(false)}>
-        <ImageUpload />
+        <ImageUpload evtId={evt.id} imageUploaded={imageUploaded} />
       </Modal>
     </Layout>
   );
