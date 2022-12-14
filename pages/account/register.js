@@ -5,18 +5,42 @@ import { FaUserCircle } from "react-icons/fa";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Link from "next/link";
+import { NEXT_URL } from "@/config/index";
+import { useDispatch } from "react-redux";
+import { getUser } from "@/Slice/authSlice";
+import { useRouter } from "next/router";
 function Register() {
+  const dispatch = useDispatch();
+  const router = useRouter();
   const [userName, setUserName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (password !== passwordConfirm) {
       toast.error("Passwords do not match");
       return;
     }
-    console.log(userName, email, password);
+    const values = { username: userName, email: email, password: password };
+    const res = await fetch(`${NEXT_URL}/api/register`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(values),
+    });
+    const result = await res.json();
+
+    if (res.ok) {
+      dispatch(getUser({ user: result.user }));
+      toast.success("you registerd successfully");
+      setTimeout(() => {
+        router.push("/account/dashboard");
+      }, 2000);
+    } else {
+      toast.error(result.error);
+    }
   };
   return (
     <Layout title="User Register">

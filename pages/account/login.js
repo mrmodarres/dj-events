@@ -2,23 +2,25 @@ import Layout from "@/components/Layout";
 import React, { useState } from "react";
 import styles from "@/styles/AuthForm.module.css";
 import { FaUserAlt } from "react-icons/fa";
-import { ToastContainer } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import Link from "next/link";
 import { useDispatch, useSelector } from "react-redux";
 import { getUser } from "@/Slice/authSlice";
-import { API_URL } from "@/config/index";
-import axios from "axios";
+import { API_URL, NEXT_URL } from "@/config/index";
+import { useRouter } from "next/router";
 function Login() {
   const dispatch = useDispatch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const router = useRouter();
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (email !== "" && password !== "") {
       // dispatch(getUser());
       const values = { identifier: email, password: password };
-      console.log(values);
-      const res = await fetch(`${API_URL}/api/auth/local`, {
+
+      const res = await fetch(`${NEXT_URL}/api/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -27,6 +29,18 @@ function Login() {
       });
       const data = await res.json();
       console.log(data);
+
+      if (res.ok) {
+        toast.success(`Welcome back ${data.user.username}`);
+        dispatch(getUser({ user: data.user }));
+        setTimeout(() => {
+          router.push("/account/dashboard");
+        }, 2000);
+      } else {
+        toast.error(data.error.message);
+      }
+    } else {
+      toast.error("Please provide youre Email addresss and Password");
     }
   };
   return (

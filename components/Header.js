@@ -5,9 +5,22 @@ import Search from "@/components/Search";
 import { FaSignInAlt, FaSignOutAlt } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { removeUser } from "@/Slice/authSlice";
+import { NEXT_URL } from "../config";
+import { useRouter } from "next/router";
 function Header() {
   const dispatch = useDispatch();
+  const router = useRouter();
   const user = useSelector((state) => state.authSlice.user);
+  const logOutHandler = async () => {
+    const res = await fetch(`${NEXT_URL}/api/logout`, {
+      method: "POST",
+    });
+    if (res.ok) {
+      dispatch(removeUser());
+      router.push("/");
+    }
+  };
+
   return (
     <header className={styles.header}>
       <div className={styles.logo}>
@@ -25,9 +38,12 @@ function Header() {
                 <Link href="/events/add">Add Event</Link>
               </li>
               <li>
+                <Link href="/account/dashboard">Dashboard</Link>
+              </li>
+              <li>
                 <button
                   className="btn-secondary btn-icon"
-                  onClick={() => dispatch(removeUser())}
+                  onClick={logOutHandler}
                 >
                   <FaSignOutAlt /> Logout
                 </button>
